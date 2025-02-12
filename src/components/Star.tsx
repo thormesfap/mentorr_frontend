@@ -1,17 +1,20 @@
-function Star({
-  rating,
-  is_small,
-  mouseClick,
-}: {
+function Star({rating, is_small, mouseClick, updateable}: {
   rating: number;
   is_small: boolean;
+  updateable: boolean;
   mouseClick: (rating: number) => void;
 }) {
   return (
     <figure className="flex">
       {[...Array(5)].map((_, index) => (
         <svg
-          onMouseOver={() => mouseClick(index + 1)}
+          onMouseOver={() => 
+          {
+            if (updateable) {
+              mouseClick(index + 1);
+            }
+          }
+          }
           key={index}
           width={is_small ? "16" : "31"}
           height={is_small ? "16" : "31"}

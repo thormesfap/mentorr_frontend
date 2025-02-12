@@ -49,6 +49,7 @@ function TestimonialItem({
           <Star
             rating={rating}
             is_small={false}
+            updateable={false}
             mouseClick={handleMessage}
           />
         </div>
