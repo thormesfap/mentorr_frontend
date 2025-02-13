@@ -1,5 +1,5 @@
-import { Link } from 'react-router-dom';
-import SkillBadge from '../badges/SkillBadge';
+import { Link } from "react-router-dom";
+import SkillBadge from "../badges/SkillBadge";
 
 function Hero() {
   return (
@@ -27,7 +27,7 @@ function Hero() {
           />
           <Link
             to="/buscar"
-            className="md:w-1/4 px-6 bg-blue-600 text-white font-bold rounded-lg"
+            className="md:w-1/4 px-6 bg-blue-600 text-white font-bold rounded-lg flex items-center justify-center"
           >
             Buscar
           </Link>

@@ -3,6 +3,7 @@ import { baseUrl } from "../../services/apiService";
 import Star from "../Star";
 import dollar from "../../assets/dollar.svg";
 import checked from "../../assets/verified.svg";
+import SkillBadge from '../badges/SkillBadge';
 
 function CardMentor(props: { mentor: Mentor }) {
   function getProfilePicture() {
@@ -50,17 +51,7 @@ function CardMentor(props: { mentor: Mentor }) {
         </figure>
         <p className="text-sm text-justify">{props.mentor.biografia}</p>
         <div className="mx-auto">
-          <ul className="flex gap-2 flex-wrap justify-start leading-8 text-xs">
-            {props.mentor.habilidades
-              ?.map(
-                (habilidade) => `
-                    <li>
-                        <a className="bg-gray-200 py-1 px-3 rounded-full" href="#">${habilidade.nome}</a>
-                    </li>
-                `
-              )
-              .join("")}
-          </ul>
+            <SkillBadge skills={props.mentor.habilidades?.map((habilidade) => habilidade.nome) ?? []} is_small={true} />
         </div>
         <div className="flex justify-between">
           <div className="flex gap-1 items-center">

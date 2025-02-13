@@ -1,4 +1,8 @@
+import { redirect } from 'react-router-dom';
 import { postRequest, getRequest, patchRequest, getAuthHeaders } from "./apiService.ts";
+
+
+
 
 async function login(email:string, password:string) {
   try {
@@ -121,7 +125,7 @@ async function uploadProfilePicture(file: File) {
 function logout() {
   sessionStorage.removeItem("user");
   sessionStorage.removeItem("jwtToken");
-  window.location.href = "index.html";
+  redirect('/');
 }
 
 export { login, register, me, logout, profile, uploadProfilePicture };

@@ -1,7 +1,84 @@
 import { Link } from "react-router-dom";
+import { baseUrl } from "../../services/apiService";
 import logo from "../../assets/logo-mentorr.svg";
+import { logout as performLogout } from "../../services/authService";
+import { useState } from "react";
 
 function Header() {
+  const [isLoggedIn, setIsLoggedIn] = useState(
+    !!sessionStorage.getItem("jwtToken")
+  );
+  const user = JSON.parse(sessionStorage.getItem("user") ?? "{}");
+
+  function logout() {
+    performLogout();
+    setIsLoggedIn(false);
+  }
+
+  function getButtonLogin() {
+    if (!isLoggedIn || !user) {
+      return (
+        <Link
+          to="/login"
+          className="px-2 py-1 text-center rounded-lg"
+        >
+          Login
+        </Link>
+      );
+    }
+    if (user.foto_perfil) {
+      return (
+        <>
+          <Link to="/perfil">
+            <img
+              src={baseUrl + user.foto_perfil}
+              alt={user.nome}
+              className="w-10 h-10 rounded-full"
+            />
+          </Link>
+          <button
+            className="text-center rounded-lg"
+            onClick={logout}
+          >
+            Logout
+          </button>
+        </>
+      );
+    } else {
+      return (
+        <Link to="/perfil">
+          <div className="w-10 h-10 bg-slate-500 flex items-center justify-center rounded-full text-xl font-bold text-white">
+            {user.nome.charAt(0)}
+          </div>
+        </Link>
+      );
+    }
+  }
+
+  function getMentorButton() {
+    if (!isLoggedIn || !user) {
+      return (
+        <Link
+          to="/cadastro"
+          className="px-6 py-3 bg-blue-600 text-white rounded-lg flex items-center justify-center"
+        >
+          Quero ser Mentorr
+        </Link>
+      );
+    }
+    if (user && !user.mentor) {
+      return (
+        <Link
+          to="/cadastro_mentor"
+          className="px-2 py-1 text-slate-500 text-[10px] text-center rounded-lg"
+        >
+          Quero ser Mentorr
+        </Link>
+      );
+    }
+    return null;
+  }
+
   return (
     <>
       <header className="px-8 md:px-0">
@@ -27,11 +104,8 @@ function Header() {
                 />
               </svg>
             </div>
-
-            <button className="bg-blue-600 text-white px-8 py-3 font-semibold rounded-lg">
-              Quero ser Mentorr
-            </button>
-            <Link to="/">Login</Link>
+            {getMentorButton()}
+            {getButtonLogin()}
           </div>
         </div>
       </header>
