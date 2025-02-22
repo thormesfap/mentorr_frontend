@@ -6,6 +6,7 @@ import Login from "./pages/Login";
 import { AppProvider } from "./contexts/AppContext";
 import Loader from './components/Loader';
 import Snackbar from './components/Snackbar';
+import Register from './pages/Register';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
             <Route path="/buscar" element={<Buscar />} />
           </Route>
           <Route path="/login" element={<Login />}></Route>
+          <Route path="/cadastro" element={<Register />}></Route>
         </Routes>
       </Router>
     </AppProvider>
