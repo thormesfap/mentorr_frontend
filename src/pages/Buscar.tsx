@@ -36,6 +36,10 @@ function Buscar() {
     []
   );
 
+  const handleRadioChange = (value: string, endpoint: string) => {
+    handleDebouncedChange(value, endpoint);
+  };
+
   return (
     <>
       <section>
@@ -68,8 +72,10 @@ function Buscar() {
                 return (
                   <div className="flex gap-3 items-center" key={area.id}>
                     <input
-                      type="checkbox"
+                      type="radio"
+                      name="area"
                       className="appearance-none w-5 h-5 border rounded border-slate-300"
+                      onChange={() => handleRadioChange(area.nome, "area")}
                     />
                     <span className="text-slate-600">{area.nome}</span>
                   </div>
@@ -93,8 +99,10 @@ function Buscar() {
                 return (
                   <div className="flex gap-3 items-center" key={cargo.id}>
                     <input
-                      type="checkbox"
+                      type="radio"
+                      name="cargo"
                       className="appearance-none w-5 h-5 border rounded border-slate-300"
+                      onChange={() => handleRadioChange(cargo.nome, "cargo")}
                     />
                     <span className="text-slate-600">{cargo.nome}</span>
                   </div>
@@ -118,8 +126,12 @@ function Buscar() {
                 return (
                   <div className="flex gap-3 items-center" key={empresa.id}>
                     <input
-                      type="checkbox"
+                      type="radio"
+                      name="empresa"
                       className="appearance-none w-5 h-5 border rounded border-slate-300"
+                      onChange={() =>
+                        handleRadioChange(empresa.nome, "empresa")
+                      }
                     />
                     <span className="text-slate-600">{empresa.nome}</span>
                   </div>
