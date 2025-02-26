@@ -4,7 +4,23 @@ async function getEntity<T>(endpoint:string): Promise<{ success: boolean; data?:
   try {
     const response = await getRequest(endpoint);
     if (!response.message) {
-      return { success: true, data: response.map(mapEntity<T>) };
+      return { success: true, data: response.data.map(mapEntity<T>) };
+    } else {
+      return {
+        success: false,
+        message: response.message || "Busca falhou",
+      };
+    }
+  } catch (error) {
+    return { success: false, message: (error as Error).message };
+  }
+}
+
+async function searchEntity<T>(endpoint: string, search: string): Promise<{ success: boolean; data?: T[]; message?: string; }> {
+  try {
+    const response = await getRequest(`${endpoint}?search=${search}`);
+    if (!response.message) {
+      return { success: true, data: response.data.map(mapEntity<T>) };
     } else {
       return {
         success: false,
@@ -28,4 +44,4 @@ function mapEntity<T>(data: {[key: string] : string}): T {
  
 
 
-export { getEntity };
+export { getEntity, searchEntity };

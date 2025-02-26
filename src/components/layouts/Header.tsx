@@ -70,7 +70,7 @@ function Header() {
       return (
         <Link
           to="/cadastro_mentor"
-          className="px-2 py-1 text-slate-500 text-[10px] text-center rounded-lg"
+          className="px-6 py-3 bg-blue-600 text-white rounded-lg flex items-center justify-center"
         >
           Quero ser Mentorr
         </Link>
