@@ -1,42 +1,40 @@
 import { useCallback, useEffect, useState } from "react";
-import { getEntity, searchEntity } from "../services/basicEntitiesService";
-import { getMentores } from "../services/mentorService";
+import { getEntity } from "../services/basicEntitiesService";
+import { getMentores, searchMentor } from "../services/mentorService";
 import { Empresa, Cargo, Area, Mentor } from "../interfaces/mentorr-interfaces";
 import CardMentor from "../components/layouts/CardMentor";
 import DebounceInput from "../components/DebounceInput";
-import lupa from "../assets/lupa.svg";
+import { useSearchParams } from "react-router-dom";
 
 function Buscar() {
   const [mentors, setMentors] = useState<Mentor[]>([]);
   const [empresas, setEmpresas] = useState<Empresa[]>([]);
   const [cargos, setCargos] = useState<Cargo[]>([]);
   const [areas, setAreas] = useState<Area[]>([]);
+  const [query] = useSearchParams();
 
   useEffect(() => {
     getEntity<Empresa>("empresa").then((data) => setEmpresas(data.data ?? []));
     getEntity<Cargo>("cargo").then((data) => setCargos(data.data ?? []));
     getEntity<Area>("area").then((data) => setAreas(data.data ?? []));
-    getMentores().then((data) => setMentors(data.data ?? []));
-  }, []);
+    if (query.get("search")) {
+      searchMentor(query.get("search") as string, "area").then((data) => {
+        setMentors(data.data ?? []);
+      });
+    } else {
+      getMentores().then((data) => setMentors(data.data ?? []));
+    }
+  }, [query]);
 
-  const handleDebouncedChange = useCallback((value: string, endpoint: string) => {
-    if (value.length < 3 && value.length > 0) return;
-    searchEntity(endpoint, value).then((data) => {
-      switch (endpoint) {
-        case "empresa":
-          setEmpresas(data.data ?? []);
-          break;
-        case "cargo":
-          setCargos(data.data ?? []);
-          break;
-        case "area":
-          setAreas(data.data ?? []);
-          break;
-        default:
-          break;
-      }
-    });
-  },[]);
+  const handleDebouncedChange = useCallback(
+    (value: string, endpoint: string) => {
+      if (value.length < 3 && value.length > 0) return;
+      searchMentor(value, endpoint).then((data) => {
+        setMentors(data.data ?? []);
+      });
+    },
+    []
+  );
 
   return (
     <>

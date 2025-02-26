@@ -122,28 +122,28 @@ function HeaderMenu() {
         <nav className="hidden md:block">
           <ul className="flex justify-between">
             <li>
-              <Link to="/">UX/UI</Link>
+              <Link to="/buscar?search=UX/UI">UX/UI</Link>
             </li>
             <li>
-              <Link to="/">Front-end</Link>
+              <Link to="/buscar?search=Frontend">Front-end</Link>
             </li>
             <li>
-              <Link to="/">Back-end</Link>
+              <Link to="/buscar?search=Backend">Back-end</Link>
             </li>
             <li>
-              <Link to="/">DevOps</Link>
+              <Link to="/buscar?search=DevOps">DevOps</Link>
             </li>
             <li>
-              <Link to="/">Agile</Link>
+              <Link to="/buscar?search=Agile">Agile</Link>
             </li>
             <li>
-              <Link to="/">Cloud Computing</Link>
+              <Link to="/buscar?search=Cloud Computing">Cloud Computing</Link>
             </li>
             <li>
-              <Link to="/">Inteligência Artificial</Link>
+              <Link to="/buscar?search=Inteligência Artificial">Inteligência Artificial</Link>
             </li>
             <li>
-              <Link to="/">Segurança da Informação</Link>
+              <Link to="/buscar?search=Segurança da Informação">Segurança da Informação</Link>
             </li>
           </ul>
         </nav>

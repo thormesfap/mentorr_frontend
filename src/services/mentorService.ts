@@ -18,6 +18,22 @@ async function getMentores() {
   }
 }
 
+async function searchMentor(search: string, property: string) {
+  try {
+    const response = await getRequest(`mentor?search=${search}&property=${property}`);
+    if (!response.message) {
+      return { success: true, data: response.map(mapMentor) };
+    } else {
+      return {
+        success: false,
+        message: response.message || "Busca de mentores falhou",
+      };
+    }
+  } catch (error) {
+    return { success: false, message: (error as Error).message };
+  }
+}
+
 async function cadastraMentor(
   preco: number,
   minutos: number,
@@ -64,9 +80,10 @@ function mapMentor(data:BackendMentor): Mentor {
     minutosPorChamada: data.minutos_por_chamada,
     quantidadeChamadas: data.quantidade_chamadas,
     avaliacao: data.avaliacao,
+    habilidades: data.habilidades,
     tags: data.tags,
   };
   return mentor;
 }
 
-export { getMentores, cadastraMentor };
+export { getMentores, cadastraMentor, searchMentor };
