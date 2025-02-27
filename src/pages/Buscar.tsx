@@ -18,7 +18,7 @@ function Buscar() {
     getEntity<Cargo>("cargo").then((data) => setCargos(data.data ?? []));
     getEntity<Area>("area").then((data) => setAreas(data.data ?? []));
     if (query.get("search")) {
-      searchMentor(query.get("search") as string, "area").then((data) => {
+      searchMentor({ area: query.get("search") as string }).then((data) => {
         setMentors(data.data ?? []);
       });
     } else {
@@ -28,8 +28,14 @@ function Buscar() {
 
   const handleDebouncedChange = useCallback(
     (value: string, endpoint: string) => {
-      if (value.length < 3 && value.length > 0) return;
-      searchMentor(value, endpoint).then((data) => {
+      if (!value) {
+        getMentores().then((data) => setMentors(data.data ?? []));
+        return;
+      }
+      if (value.length < 3) return;
+      const payload: { [key: string]: string } = {};
+      payload[endpoint] = value;
+      searchMentor(payload).then((data) => {
         setMentors(data.data ?? []);
       });
     },
@@ -140,9 +146,9 @@ function Buscar() {
             </div>
           </div>
           <div id="mentor-container" className="flex flex-col md:w-2/3 gap-6">
-            {mentors.map((mentor) => (
+            {mentors.length > 0 ? mentors.map((mentor) => (
               <CardMentor key={mentor.id!} mentor={mentor} />
-            ))}
+            )): 'Nenhum mentor encontrado' }
           </div>
         </div>
       </section>

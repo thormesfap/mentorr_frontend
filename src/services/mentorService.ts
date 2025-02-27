@@ -18,9 +18,13 @@ async function getMentores() {
   }
 }
 
-async function searchMentor(search: string, property: string) {
+async function searchMentor(params:{[key:string]: string}) {
   try {
-    const response = await getRequest(`mentor?search=${search}&property=${property}`);
+    const queryParams = [];
+    for (const [key, value] of Object.entries(params)) {
+      queryParams.push(`${key}=${value}`);
+    }
+    const response = await getRequest(`mentor?${queryParams.join("&")}`);
     if (!response.message) {
       return { success: true, data: response.map(mapMentor) };
     } else {
