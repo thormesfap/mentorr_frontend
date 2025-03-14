@@ -6,7 +6,7 @@ async function getMentores() {
   try {
     const response = await getRequest("mentor");
     if (!response.message) {
-      return { success: true, data: response.map(mapMentor) };
+      return { success: true, data: response.data.map(mapMentor) };
     } else {
       return {
         success: false,
@@ -26,7 +26,7 @@ async function searchMentor(params:{[key:string]: string}) {
     }
     const response = await getRequest(`mentor?${queryParams.join("&")}`);
     if (!response.message) {
-      return { success: true, data: response.map(mapMentor) };
+      return { success: true, data: response.data.map(mapMentor) };
     } else {
       return {
         success: false,
@@ -86,6 +86,9 @@ function mapMentor(data:BackendMentor): Mentor {
     avaliacao: data.avaliacao,
     habilidades: data.habilidades,
     tags: data.tags,
+    empresa: data.empresa ? { id: data.empresa?.id, nome: data.empresa.nome } : undefined,
+    cargo: data.cargo ? {id: data.cargo?.id, nome: data.cargo.nome} : undefined
+    
   };
   return mentor;
 }
