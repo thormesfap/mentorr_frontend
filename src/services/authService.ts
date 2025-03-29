@@ -1,10 +1,13 @@
-import { redirect } from 'react-router-dom';
-import { postRequest, getRequest, patchRequest, getAuthHeaders } from "./apiService.ts";
+import { redirect } from "react-router-dom";
+import {
+  postRequest,
+  getRequest,
+  patchRequest,
+  getAuthHeaders,
+} from "./apiService.ts";
+import { globalUser } from "./appState";
 
-
-
-
-async function login(email:string, password:string) {
+async function login(email: string, password: string) {
   try {
     const response = await postRequest("auth/login", { email, password });
     if (response.token) {
@@ -12,6 +15,7 @@ async function login(email:string, password:string) {
       const userResponse = await me();
       if (userResponse.success) {
         sessionStorage.setItem("user", JSON.stringify(userResponse.data));
+        globalUser(userResponse.data);
         return { success: true, token: response.token };
       } else {
         return {
@@ -22,12 +26,12 @@ async function login(email:string, password:string) {
     } else {
       return { success: false, message: response.message || "Login Falhou" };
     }
-  } catch (error ) {
+  } catch (error) {
     return { success: false, message: (error as Error).message };
   }
 }
 
-async function register(email:string, password:string, name:string) {
+async function register(email: string, password: string, name: string) {
   try {
     const response = await postRequest("auth/register", {
       email,
@@ -68,7 +72,7 @@ async function profile(name = "", data_nascimento = "", telefone = "") {
         message: "Nenhum campo informado para atualização",
       };
     }
-      const objeto: {[key: string]: string} = {};
+    const objeto: { [key: string]: string } = {};
     if (name != "") {
       objeto["name"] = name;
     }
@@ -125,7 +129,8 @@ async function uploadProfilePicture(file: File) {
 function logout() {
   sessionStorage.removeItem("user");
   sessionStorage.removeItem("jwtToken");
-  redirect('/');
+  globalUser(null);
+  redirect("/");
 }
 
 export { login, register, me, logout, profile, uploadProfilePicture };

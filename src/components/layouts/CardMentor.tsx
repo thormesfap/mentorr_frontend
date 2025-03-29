@@ -4,6 +4,7 @@ import Star from "../Star";
 import dollar from "../../assets/dollar.svg";
 import checked from "../../assets/verified.svg";
 import SkillBadge from "../badges/SkillBadge";
+import { Link } from 'react-router-dom';
 
 function CardMentor(props: { mentor: Mentor }) {
   function getProfilePicture() {
@@ -72,9 +73,11 @@ function CardMentor(props: { mentor: Mentor }) {
               <span className="text-sm font-medium">/mês</span>
             </span>
           </div>
+          <Link to={'/mentor/' + props.mentor.id}>
           <button className="px-6 py-3 bg-blue-600 text-white font-bold rounded-lg">
             Ver perfil completo
           </button>
+          </Link>
         </div>
       </div>
     </div>

@@ -8,6 +8,7 @@ import Loader from "./components/Loader";
 import Snackbar from "./components/Snackbar";
 import Register from "./pages/Register";
 import CadastroMentor from "./pages/CadastroMentor";
+import PerfilMentor from './pages/PerfilMentor';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/buscar" element={<Buscar />} />
             <Route path="cadastro_mentor" element={<CadastroMentor />} />
+            <Route path="mentor/:id" element = {<PerfilMentor/>} />
           </Route>
           <Route path="/login" element={<Login />}></Route>
           <Route path="/cadastro" element={<Register />}></Route>

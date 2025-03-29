@@ -11,7 +11,6 @@ function Buscar() {
   const [empresas, setEmpresas] = useState<Empresa[]>([]);
   const [cargos, setCargos] = useState<Cargo[]>([]);
   const [areas, setAreas] = useState<Area[]>([]);
-  const [search, setSearch] = useState('');
   const [query] = useSearchParams();
 
   useEffect(() => {
@@ -25,28 +24,22 @@ function Buscar() {
     } else {
       getMentores().then((data) => setMentors(data.data ?? []));
     }
-
   }, [query]);
 
   const handleDebouncedChange = useCallback(
     (value: string, endpoint: string) => {
-      if (value == search) {
-        return;
-      }
       if (!value) {
         getMentores().then((data) => setMentors(data.data ?? []));
-        setSearch('');
         return;
       }
       if (value.length < 3) return;
       const payload: { [key: string]: string } = {};
       payload[endpoint] = value;
-      setSearch(value);
       searchMentor(payload).then((data) => {
         setMentors(data.data ?? []);
       });
     },
-    [search]
+    []
   );
 
   const handleRadioChange = (value: string, endpoint: string) => {

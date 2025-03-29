@@ -20,6 +20,7 @@ export interface BackendMentor extends Entity {
   minutos_por_chamada: number;
   quantidade_chamadas: number;
   avaliacao?: number;
+  mentorias?: BackendMentoria[];
   tags?: string[];
 }
 
@@ -31,8 +32,8 @@ export interface BackendMentoria extends Entity {
   data_hora_termino?: Date;
   avaliacao?: number;
   ativa: boolean;
-  usuario: BackendUser;
-  mentor: BackendMentor;
+  user_id: number;
+  mentor_id: number;
 }
 
 export interface SessaoMentoria extends Entity {

@@ -2,13 +2,22 @@ import { Link } from "react-router-dom";
 import { baseUrl } from "../../services/apiService";
 import logo from "../../assets/logo-mentorr.svg";
 import { logout as performLogout } from "../../services/authService";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useAppContext } from '../../contexts/AppContext';
 
 function Header() {
+  const { user, setUser } = useAppContext();
   const [isLoggedIn, setIsLoggedIn] = useState(
     !!sessionStorage.getItem("jwtToken")
   );
-  const user = JSON.parse(sessionStorage.getItem("user") ?? "{}");
+  const storedUser = JSON.parse(sessionStorage.getItem("user") ?? "{}");
+
+  useEffect(() => {
+    if (storedUser.id) {
+      setUser(storedUser);
+      setIsLoggedIn(true);
+    }
+  }, [setUser]);
 
   function logout() {
     performLogout();
@@ -18,45 +27,44 @@ function Header() {
   function getButtonLogin() {
     if (!isLoggedIn || !user) {
       return (
-        <Link
-          to="/login"
-          className="px-2 py-1 text-center rounded-lg"
-        >
+        <Link to="/login" className="px-2 py-1 text-center rounded-lg">
           Login
         </Link>
       );
     }
-    if (user.foto_perfil) {
+    if (storedUser.foto_perfil) {
       return (
         <>
           <Link to="/perfil">
             <img
-              src={baseUrl + user.foto_perfil}
-              alt={user.nome}
+              src={baseUrl + storedUser.foto_perfil}
+              alt={storedUser.nome}
               className="w-10 h-10 rounded-full"
             />
           </Link>
-          <button
-            className="text-center rounded-lg"
-            onClick={logout}
-          >
+          <button className="text-center rounded-lg" onClick={logout}>
             Logout
           </button>
         </>
       );
     } else {
       return (
-        <Link to="/perfil">
-          <div className="w-10 h-10 bg-slate-500 flex items-center justify-center rounded-full text-xl font-bold text-white">
-            {user.nome.charAt(0)}
-          </div>
-        </Link>
+        <>
+          <Link to="/perfil">
+            <div className="w-10 h-10 bg-slate-500 flex items-center justify-center rounded-full text-xl font-bold text-white">
+              {storedUser.nome.charAt(0)}
+            </div>
+          </Link>
+          <button className="text-center rounded-lg" onClick={logout}>
+            Logout
+          </button>
+        </>
       );
     }
   }
 
   function getMentorButton() {
-    if (!isLoggedIn || !user) {
+    if (!isLoggedIn || !storedUser) {
       return (
         <Link
           to="/cadastro"
@@ -66,7 +74,7 @@ function Header() {
         </Link>
       );
     }
-    if (user && !user.mentor) {
+    if (storedUser && !storedUser.mentor) {
       return (
         <Link
           to="/cadastro_mentor"
@@ -140,10 +148,14 @@ function HeaderMenu() {
               <Link to="/buscar?search=Cloud Computing">Cloud Computing</Link>
             </li>
             <li>
-              <Link to="/buscar?search=Inteligência Artificial">Inteligência Artificial</Link>
+              <Link to="/buscar?search=Inteligência Artificial">
+                Inteligência Artificial
+              </Link>
             </li>
             <li>
-              <Link to="/buscar?search=Segurança da Informação">Segurança da Informação</Link>
+              <Link to="/buscar?search=Segurança da Informação">
+                Segurança da Informação
+              </Link>
             </li>
           </ul>
         </nav>

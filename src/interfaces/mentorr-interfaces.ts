@@ -49,6 +49,7 @@ export interface Mentor extends Entity {
   minutosPorChamada: number;
   quantidadeChamadas: number;
   avaliacao?: number;
+  mentorias?: Mentoria[];
   tags?: string[];
 }
 
@@ -60,8 +61,8 @@ export interface Mentoria extends Entity {
   dataHoraTermino?: Date;
   avaliacao?: number;
   ativa: boolean;
-  usuario: User;
-  mentor: Mentor;
+  usuarioId: number;
+  mentorId?: number;
 }
 
 export interface SessaoMentoria extends Entity {

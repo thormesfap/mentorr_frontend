@@ -18,6 +18,19 @@ async function getMentores() {
   }
 }
 
+async function getMentor(id: string) {
+  try {
+    const response = await getRequest("mentor/" + id);
+    if (!response.message) {
+      return {success: true, data:mapMentor(response)}
+    } else {
+      return {success: false, message: response.message || "Mentor não encontrado"}
+    }
+  } catch (error) {
+    return {success: false, message: (error as Error).message}
+  }
+}
+
 async function searchMentor(params:{[key:string]: string}) {
   try {
     const queryParams = [];
@@ -87,10 +100,24 @@ function mapMentor(data:BackendMentor): Mentor {
     habilidades: data.habilidades,
     tags: data.tags,
     empresa: data.empresa ? { id: data.empresa?.id, nome: data.empresa.nome } : undefined,
-    cargo: data.cargo ? {id: data.cargo?.id, nome: data.cargo.nome} : undefined
+    cargo: data.cargo ? { id: data.cargo?.id, nome: data.cargo.nome } : undefined,
+    mentorias: data.mentorias ? data.mentorias.map((m) => {
+      return {
+        id: m.id,
+        valor: m.valor,
+        quantidadeSessoes: m.quantidade_sessoes,
+        expectativa: m.expectativa,
+        dataHoraInicio: m.data_hora_inicio,
+        dataHoraTermino: m.data_hora_termino,
+        avaliacao: m.avaliacao,
+        ativa: m.ativa,
+        usuarioId: m.user_id,
+        mentorId: m.mentor_id
+      }
+    }) : []
     
   };
   return mentor;
 }
 
-export { getMentores, cadastraMentor, searchMentor };
+export { getMentores, cadastraMentor, searchMentor, getMentor };
