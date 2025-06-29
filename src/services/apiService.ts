@@ -1,6 +1,6 @@
 import { globalLoading } from "./appState";
 
-const baseUrl = "http://localhost:8000";
+const baseUrl = "http://127.0.0.1:8000";
 const apiUrl = `${baseUrl}/api`;
 
 function getAuthHeaders(json: boolean = true) {

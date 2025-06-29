@@ -16,7 +16,7 @@ function CadastroMentor() {
     cadastraMentor(preco, minutos, quantidade, biografia, curriculo).then(
       (response) => {
         if (response.success) {
-          globalMessage("Registro!", "success", 3000);
+          globalMessage("Registro realizado com sucesso!", "success", 3000);
           navigate("/buscar");
         } else {
           globalMessage(response.message, "error", 5000);

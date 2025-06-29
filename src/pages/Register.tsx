@@ -28,7 +28,7 @@ function Register() {
     ];
     register(email, password, name).then((response) => {
       if (response.success) {
-        globalMessage("Registro!", "success", 3000);
+        globalMessage("Registro realizado com sucesso!", "success", 3000);
         navigate("/login");
       } else {
         globalMessage(response.message, "error", 5000);
