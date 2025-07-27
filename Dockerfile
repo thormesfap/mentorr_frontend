@@ -1,7 +1,7 @@
 # Build stage
 FROM node:22-alpine as build
 WORKDIR /app
-COPY package*.json ./
+COPY package*.json tsconfig*.json ./
 RUN npm install
 COPY . .
 RUN npm run build
