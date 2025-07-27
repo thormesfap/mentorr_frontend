@@ -3,7 +3,7 @@ pipeline {
     
     environment {
         DOCKER_IMAGE = 'thormesfap/mentorr-frontend'
-        DOCKER_TAG = env.BUILD_NUMBER
+        DOCKER_TAG = "${env.BUILD_NUMBER}"
         WORKLOAD = 'frontend-live'
         CONTAINER = 'frontend-live'
     }
@@ -12,7 +12,7 @@ pipeline {
         stage('Build') {
             steps {
                 script{
-                    dockerapp = docker.build("$DOCKER_IMAGE:$DOCKER_TAG")
+                    dockerapp = docker.build("${DOCKER_IMAGE}:${DOCKER_TAG}")
                 }
             }
         }
