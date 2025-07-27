@@ -11,8 +11,7 @@ import Phone from "../assets/phone.svg";
 import Headset from "../assets/headset.svg";
 import { createMentoria } from "../services/mentoriaService";
 import { useAppContext } from "../contexts/AppContext";
-import echo from "../config/echo.js";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer} from "react-toastify";
 
 function PerfilMentor() {
   const { id } = useParams();
@@ -26,17 +25,17 @@ function PerfilMentor() {
   );
 
   //Adicionar listener para o websocket
-  useEffect(() => {
-    echo.channel(`mentor.${id}`).listen("MatriculaAluno", (event: any) => {
-      console.log(event.alunosMatriculados);
-        setAlunos(event.alunosMatriculados);
-        toast.info("Novo aluno matriculado")
-    });
-    return () => {
-      echo.channel(`mentor.${id}`).stopListening("MatriculaAluno");
-      echo.leaveChannel(`mentor.${id}`);
-    };
-  }, [id]);
+  // useEffect(() => {
+  //   echo.channel(`mentor.${id}`).listen("MatriculaAluno", (event: any) => {
+  //     console.log(event.alunosMatriculados);
+  //       setAlunos(event.alunosMatriculados);
+  //       toast.info("Novo aluno matriculado")
+  //   });
+  //   return () => {
+  //     echo.channel(`mentor.${id}`).stopListening("MatriculaAluno");
+  //     echo.leaveChannel(`mentor.${id}`);
+  //   };
+  // }, [id]);
 
   //Carregar dados iniciais
   useEffect(() => {
@@ -47,7 +46,7 @@ function PerfilMentor() {
       console.log(data.data);
       setMentor(data.data);
       const countAlunos =
-        data?.data?.mentorias.filter((m) => m.ativa).length ?? 0;
+        data?.data?.mentorias?.filter((m) => m.ativa).length ?? 0;
       setAlunos(countAlunos);
     });
   }, [id]);
@@ -59,7 +58,7 @@ function PerfilMentor() {
     }
     const currentUser = localUser?.id ? localUser : user;
     if (currentUser?.id) {
-      const userHasActiveMentoring = mentor.mentorias.some(
+      const userHasActiveMentoring = mentor.mentorias?.some(
         (m) => m.ativa && m.usuarioId === currentUser.id
       );
       setHasActiveMentoring(userHasActiveMentoring ?? false);
