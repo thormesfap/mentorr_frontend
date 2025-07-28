@@ -19,7 +19,7 @@ pipeline {
         stage('Registry'){
             steps{
                 script{
-                    docker.withRegistry('https://index.docker.io/v1', 'dockerhub'){
+                    docker.withRegistry('https://index.docker.io/v1/', 'dockerhub'){
                         dockerapp.push()
                     }
                 }
