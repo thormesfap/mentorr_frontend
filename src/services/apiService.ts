@@ -1,9 +1,6 @@
 import { globalLoading } from "./appState";
 
 const baseUrl = import.meta.env.VITE_API_URL || (window as any).RUNTIME_CONFIG?.API_URL;
-console.log('Base Url:', baseUrl);
-console.log(import.meta.env)
-
 const apiUrl = `${baseUrl}/api`;
 
 function getAuthHeaders(json: boolean = true) {

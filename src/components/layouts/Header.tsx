@@ -92,7 +92,7 @@ function Header() {
       <header className="px-8 md:px-0">
         <div className="container mx-auto flex flex-col md:flex-row py-6 md:py-0 gap-6 md:gap-0 justify-between items-center md:h-24">
           <div>
-            <img src={logo} alt="logotipo Mentorr" />
+            <Link to="/"><img src={logo} alt="logotipo Mentorr" /></Link>
           </div>
           <div className="flex gap-4 md:gap-12 items-center">
             <div className="flex gap-2">
