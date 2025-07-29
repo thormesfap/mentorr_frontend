@@ -1,6 +1,6 @@
 import { globalLoading } from "./appState";
 
-const baseUrl = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
+const baseUrl = import.meta.env.VITE_API_URL;
 const apiUrl = `${baseUrl}/api`;
 
 function getAuthHeaders(json: boolean = true) {
