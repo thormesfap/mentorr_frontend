@@ -1,6 +1,6 @@
 import { globalLoading } from "./appState";
 
-const baseUrl = "http://backend-live:8000";
+const baseUrl = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
 const apiUrl = `${baseUrl}/api`;
 
 function getAuthHeaders(json: boolean = true) {
@@ -59,7 +59,7 @@ async function deleteRequest(endpoint: string) {
 async function uploadFile(fieldName: string, file: File, endpoint: string) {
   const formData = new FormData();
   formData.append(fieldName, file);
-  globalLoading(true);  
+  globalLoading(true);
   const response = await fetch(`${apiUrl}/${endpoint}`, {
     method: "POST",
     headers: getAuthHeaders(false),
