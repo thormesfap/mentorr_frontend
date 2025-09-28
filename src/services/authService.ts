@@ -6,6 +6,9 @@ import {
   getAuthHeaders,
 } from "./apiService.ts";
 import { globalUser } from "./appState";
+import { BackendUser } from 'interfaces/mentorr-backend-interfaces.ts';
+import { User } from 'interfaces/mentorr-interfaces.ts';
+import { mapMentor } from './mentorService.ts';
 
 async function login(email: string, password: string) {
   try {
@@ -14,8 +17,9 @@ async function login(email: string, password: string) {
       sessionStorage.setItem("jwtToken", response.token);
       const userResponse = await me();
       if (userResponse.success) {
-        sessionStorage.setItem("user", JSON.stringify(userResponse.data));
-        globalUser(userResponse.data);
+        const user = mapUser(userResponse.data);
+        sessionStorage.setItem("user", JSON.stringify(user));
+        globalUser(user);
         return { success: true, token: response.token };
       } else {
         return {
@@ -126,11 +130,73 @@ async function uploadProfilePicture(file: File) {
   }
 }
 
+async function requestPasswordReset(email: string) {
+  try {
+    const response = await postRequest("auth/forgot-password", { email });
+    if (response.success) {
+      return { success: true };
+    } else {
+      return {
+        success: false,
+        message: response.message || "Falha ao solicitar recuperação de senha",
+      };
+    }
+  } catch (error) {
+    return { success: false, message: (error as Error).message };
+  }
+}
+
+async function resetPassword(token: string, password: string, confirmation: string, email: string) {
+  try {
+    const response = await postRequest("auth/reset-password", {
+      token: token,
+      password: password,
+      password_confirmation: confirmation,
+      email: email
+    });
+    if (response.status && response.status.indexOf('redefinida') > 1) {
+      return { success: true };
+    } else {
+      return {
+        success: false,
+        message: response.message || "Falha ao redefinir senha",
+      };
+    }
+  } catch (error) {
+    return { success: false, message: (error as Error).message };
+  }
+}
+
 function logout() {
   sessionStorage.removeItem("user");
   sessionStorage.removeItem("jwtToken");
   globalUser(null);
   redirect("/");
 }
+function mapUser(user: BackendUser): User{
+  const usuario: User = {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      telefone: user.telefone,
+      dataNascimento: user.data_nascimento,
+      fotoPerfil: user.foto_perfil,
+      roles: user.role_names,
+  };
+  if (user.mentor) {
+    usuario.mentor = mapMentor(user.mentor)
+  }
+  return usuario;
+}
 
-export { login, register, me, logout, profile, uploadProfilePicture };
+export {
+  login,
+  register,
+  me,
+  logout,
+  profile,
+  uploadProfilePicture,
+  requestPasswordReset,
+  resetPassword,
+  mapUser
+};

@@ -9,9 +9,9 @@ import Chat from "../assets/chat.svg";
 import Clock from "../assets/clock.svg";
 import Phone from "../assets/phone.svg";
 import Headset from "../assets/headset.svg";
-import { createMentoria } from "../services/mentoriaService";
+import { criarSolicitacaoMentoria } from "../services/solicitacaoMentoriaService";
 import { useAppContext } from "../contexts/AppContext";
-import { ToastContainer} from "react-toastify";
+import { ToastContainer } from "react-toastify";
 
 function PerfilMentor() {
   const { id } = useParams();
@@ -23,19 +23,8 @@ function PerfilMentor() {
   const [localUser, setLocalUser] = useState(
     JSON.parse(sessionStorage.getItem("user") ?? "{}")
   );
-
-  //Adicionar listener para o websocket
-  // useEffect(() => {
-  //   echo.channel(`mentor.${id}`).listen("MatriculaAluno", (event: any) => {
-  //     console.log(event.alunosMatriculados);
-  //       setAlunos(event.alunosMatriculados);
-  //       toast.info("Novo aluno matriculado")
-  //   });
-  //   return () => {
-  //     echo.channel(`mentor.${id}`).stopListening("MatriculaAluno");
-  //     echo.leaveChannel(`mentor.${id}`);
-  //   };
-  // }, [id]);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [expectativa, setExpectativa] = useState("");
 
   //Carregar dados iniciais
   useEffect(() => {
@@ -73,28 +62,26 @@ function PerfilMentor() {
     }
   }, [user]);
 
-  const handleMatricula = async (
-    mentorId: number,
-    valor: number,
-    quantidadeSessoes: number
-  ) => {
+  const handleMatricula = async () => {
     const currentUser = localUser?.id ? localUser : user;
     if (!currentUser?.id) {
       navigate("/login");
       return;
     }
+    setOpenDialog(true);
+  };
 
-    const response = await createMentoria(
-      valor,
-      currentUser.id,
-      mentorId,
-      quantidadeSessoes
-    );
+  const handleSubmitSolicitacao = async () => {
+    if (!mentor || !expectativa.trim()) return;
+
+    const response = await criarSolicitacaoMentoria(mentor.id!, expectativa);
 
     if (response.success) {
-      showMessage("Matrícula realizada com sucesso!", "success");
+      showMessage("Solicitação enviada com sucesso!", "success");
+      setOpenDialog(false);
+      setExpectativa("");
     } else {
-      showMessage(response.message || "Erro ao realizar matrícula", "error");
+      showMessage(response.message || "Erro ao enviar solicitação", "error");
     }
   };
 
@@ -102,7 +89,7 @@ function PerfilMentor() {
     if (!mentor) {
       return;
     }
-    if (mentor.user.fotoPerfil) {
+    if (mentor.user?.fotoPerfil) {
       return (
         <img
           src={baseUrl + "/storage/" + mentor.user.fotoPerfil}
@@ -113,7 +100,7 @@ function PerfilMentor() {
     } else {
       return (
         <div className="w-64 h-64 bg-slate-500 flex items-center justify-center rounded-full text-6xl font-bold text-white">
-          {mentor.user.name.charAt(0)}
+          {mentor.user?.name.charAt(0)}
         </div>
       );
     }
@@ -125,7 +112,7 @@ function PerfilMentor() {
         <section className="p-4">
           <div className="flex flex-col items-center gap-2">
             <div>{getProfilePicture()}</div>
-            <div className="text-2xl font-bold">{mentor?.user.name}</div>
+            <div className="text-2xl font-bold">{mentor?.user?.name}</div>
             <div>
               {mentor?.cargo
                 ? `${mentor.cargo.nome} na ${mentor?.empresa?.nome}`
@@ -205,20 +192,49 @@ function PerfilMentor() {
                   className={`px-6 py-3 ${
                     hasActiveMentoring ? "bg-gray-400" : "bg-blue-600"
                   } text-white rounded-lg flex items-center justify-center w-full`}
-                  onClick={() =>
-                    handleMatricula(
-                      mentor.id!,
-                      mentor.preco,
-                      mentor.quantidadeChamadas
-                    )
-                  }
+                  onClick={handleMatricula}
                 >
-                  {hasActiveMentoring ? "Já é seu Mentor" : "Contratar Agora"}
+                  {hasActiveMentoring ? "Já é seu Mentor" : "Solicitar Mentoria"}
                 </button>
               )}
             </div>
           </div>
         </section>
+
+        {openDialog && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div className="bg-white rounded-lg p-6 w-full max-w-md">
+              <h2 className="text-xl font-semibold mb-4">Solicitar Mentoria</h2>
+              <div className="mb-4">
+                <textarea
+                  autoFocus
+                  className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  rows={4}
+                  value={expectativa}
+                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                    setExpectativa(e.target.value)
+                  }
+                  placeholder="Descreva o que você espera aprender ou alcançar com esta mentoria..."
+                />
+              </div>
+              <div className="flex justify-end gap-2">
+                <button
+                  onClick={() => setOpenDialog(false)}
+                  className="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={handleSubmitSolicitacao}
+                  className="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors"
+                >
+                  Enviar Solicitação
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         <ToastContainer />
       </div>
     )

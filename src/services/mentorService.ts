@@ -1,6 +1,7 @@
-import { BackendMentor } from '../interfaces/mentorr-backend-interfaces.ts';
-import { User, Mentor } from "../interfaces/mentorr-interfaces.ts";
-import { postRequest, getRequest } from "./apiService.ts";
+import { BackendMentor } from "../interfaces/mentorr-backend-interfaces.ts";
+import { Mentor } from "../interfaces/mentorr-interfaces.ts";
+import { postRequest, getRequest, patchRequest } from "./apiService.ts";
+import { mapUser } from "./authService.ts";
 
 async function getMentores() {
   try {
@@ -22,16 +23,19 @@ async function getMentor(id: string) {
   try {
     const response = await getRequest("mentor/" + id);
     if (!response.message) {
-      return {success: true, data:mapMentor(response)}
+      return { success: true, data: mapMentor(response) };
     } else {
-      return {success: false, message: response.message || "Mentor não encontrado"}
+      return {
+        success: false,
+        message: response.message || "Mentor não encontrado",
+      };
     }
   } catch (error) {
-    return {success: false, message: (error as Error).message}
+    return { success: false, message: (error as Error).message };
   }
 }
 
-async function searchMentor(params:{[key:string]: string}) {
+async function searchMentor(params: { [key: string]: string }) {
   try {
     const queryParams = [];
     for (const [key, value] of Object.entries(params)) {
@@ -78,19 +82,10 @@ async function cadastraMentor(
     return { success: false, message: (error as Error).message };
   }
 }
-function mapMentor(data:BackendMentor): Mentor {
-  const user: User = {
-    id: data.id,
-    name: data.user.name,
-    email: data.user.email,
-    telefone: data.user.telefone,
-    dataNascimento: data.user.data_nascimento,
-    fotoPerfil: data.user.foto_perfil,
-    roles: data.user.roles,
-  };
+function mapMentor(data: BackendMentor): Mentor {
   const mentor: Mentor = {
     id: data.id,
-    user: user,
+    user: data.user ? mapUser(data.user) : undefined,
     curriculo: data.curriculo,
     biografia: data.biografia,
     preco: data.preco,
@@ -99,25 +94,59 @@ function mapMentor(data:BackendMentor): Mentor {
     avaliacao: data.avaliacao,
     habilidades: data.habilidades,
     tags: data.tags,
-    empresa: data.empresa ? { id: data.empresa?.id, nome: data.empresa.nome } : undefined,
-    cargo: data.cargo ? { id: data.cargo?.id, nome: data.cargo.nome } : undefined,
-    mentorias: data.mentorias ? data.mentorias.map((m) => {
-      return {
-        id: m.id,
-        valor: m.valor,
-        quantidadeSessoes: m.quantidade_sessoes,
-        expectativa: m.expectativa,
-        dataHoraInicio: m.data_hora_inicio,
-        dataHoraTermino: m.data_hora_termino,
-        avaliacao: m.avaliacao,
-        ativa: m.ativa,
-        usuarioId: m.user_id,
-        mentorId: m.mentor_id
-      }
-    }) : []
-    
+    empresa: data.empresa
+      ? { id: data.empresa?.id, nome: data.empresa.nome }
+      : undefined,
+    cargo: data.cargo
+      ? { id: data.cargo?.id, nome: data.cargo.nome }
+      : undefined,
+    mentorias: data.mentorias
+      ? data.mentorias.map((m) => {
+          return {
+            id: m.id,
+            valor: m.valor,
+            quantidadeSessoes: m.quantidade_sessoes,
+            expectativa: m.expectativa,
+            dataHoraInicio: m.data_hora_inicio,
+            dataHoraTermino: m.data_hora_termino,
+            avaliacao: m.avaliacao,
+            ativa: m.ativa,
+            usuarioId: m.user_id,
+            mentorId: m.mentor_id,
+          };
+        })
+      : [],
   };
   return mentor;
 }
 
-export { getMentores, cadastraMentor, searchMentor, getMentor };
+async function updateMentor(
+  mentorId: number,
+  preco: number,
+  minutos: number,
+  quantidade: number,
+  biografia = "",
+  curriculo = ""
+) {
+  try {
+    const response = await patchRequest(`mentor/${mentorId}`, {
+      preco,
+      minutos_por_chamada: minutos,
+      quantidade_chamadas: quantidade,
+      biografia,
+      curriculo,
+    });
+    if (!response.message) {
+      return { success: true, data: response };
+    } else {
+      return {
+        success: false,
+        message: response.message || "Atualização do mentor falhou",
+      };
+    }
+  } catch (error) {
+    return { success: false, message: (error as Error).message };
+  }
+}
+
+export { getMentores, cadastraMentor, searchMentor, getMentor, updateMentor, mapMentor };

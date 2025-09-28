@@ -8,18 +8,18 @@ import { Link } from 'react-router-dom';
 
 function CardMentor(props: { mentor: Mentor }) {
   function getProfilePicture() {
-    if (props.mentor.user.fotoPerfil) {
+    if (props.mentor.user?.fotoPerfil) {
       return (
         <img
-          src={baseUrl + "/storage/" + props.mentor.user.fotoPerfil}
+          src={baseUrl + "/storage/" + props.mentor?.user?.fotoPerfil}
           className="w-32 h-32 rounded-full"
-          alt={props.mentor.user.name}
+          alt={props.mentor.user?.name}
         ></img>
       );
     } else {
       return (
         <div className="w-32 h-32 bg-slate-500 flex items-center justify-center rounded-full text-6xl font-bold text-white">
-          {props.mentor.user.name.charAt(0)}
+          {props.mentor.user?.name.charAt(0)}
         </div>
       );
     }
@@ -32,7 +32,7 @@ function CardMentor(props: { mentor: Mentor }) {
       </div>
       <div className="flex flex-col gap-1 md:w-2/3">
         <div className="flex items-center gap-2">
-          <h3 className="text-2xl font-bold">{props.mentor.user.name}</h3>
+          <h3 className="text-2xl font-bold">{props.mentor.user?.name}</h3>
           <figure>
             <img src={checked} />
           </figure>

@@ -35,11 +35,12 @@ export interface User extends Entity {
   telefone?: string;
   dataNascimento?: Date;
   fotoPerfil?: string;
+  mentor?: Mentor;
   roles: string[];
 }
 
 export interface Mentor extends Entity {
-  user: User;
+  user?: User;
   habilidades?: Habilidade[];
   cargo?: Nameable;
   empresa?: Nameable;
@@ -63,6 +64,8 @@ export interface Mentoria extends Entity {
   ativa: boolean;
   usuarioId: number;
   mentorId?: number;
+  usuario?: User;
+  mentor?: Mentor;
 }
 
 export interface SessaoMentoria extends Entity {
@@ -70,4 +73,13 @@ export interface SessaoMentoria extends Entity {
   dataHoraTermino?: Date;
   avaliacao?: number;
   mentoria: Mentoria;
+}
+
+export interface SolicitacaoMentoria extends Entity{
+  aceita: boolean | null;
+  justificativa?: string;
+  expectativa?: string;
+  dataHoraResposta?: Date;
+  usuario?: User;
+  mentor?: Mentor;
 }

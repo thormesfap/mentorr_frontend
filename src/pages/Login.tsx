@@ -104,12 +104,12 @@ function Login() {
                 Entrar com o Google
               </div>
             </button>
-            <a
-              href="#"
-              className="text-blue-600  font-semibold underline block"
+            <Link
+              to="/esqueci-senha"
+              className="text-blue-600 font-semibold underline block"
             >
               Esqueci a Senha
-            </a>
+            </Link>
             <div className="font-semibold block ">Ainda não tem uma conta?</div>
             <Link
               to="/cadastro"

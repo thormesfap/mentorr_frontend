@@ -3,7 +3,9 @@ import { baseUrl } from "../../services/apiService";
 import logo from "../../assets/logo-mentorr.svg";
 import { logout as performLogout } from "../../services/authService";
 import { useEffect, useState } from "react";
-import { useAppContext } from '../../contexts/AppContext';
+import { useAppContext } from "../../contexts/AppContext";
+import { toast, ToastContainer } from "react-toastify";
+import echo from "../../config/echo.js";
 
 function Header() {
   const { user, setUser } = useAppContext();
@@ -19,10 +21,35 @@ function Header() {
     }
   }, [setUser]);
 
+  useEffect(() => {
+    if (storedUser?.mentor?.id) {
+      echo
+        .channel(`mentor.${storedUser.mentor.id}`)
+        .listen("MatriculaAluno", () => {
+          toast.info("Novo aluno solicitou mentoria!");
+        });
+    }
+    echo.channel(`aluno.${storedUser.id}`).listen("MentoriaAceita", () => {
+      toast.info("Um mentor aceitou sua solicitação de mentoria")
+    });
+    return () => {
+      if (storedUser?.mentor?.id) {
+        echo
+          .channel(`mentor.${storedUser.mentor.id}`)
+          .stopListening("MatriculaAluno");
+        echo.leaveChannel(`mentor.${storedUser.mentor.id}`);
+      }
+      echo.channel(`aluno.${storedUser.id}`).stopListening("MentoriaAceita");
+      echo.leaveChannel(`aluno.${storedUser.id}`);
+    };
+  }, [storedUser]);
+
   function logout() {
     performLogout();
     setIsLoggedIn(false);
   }
+
+  const [menuOpen, setMenuOpen] = useState(false);
 
   function getButtonLogin() {
     if (!isLoggedIn || !user) {
@@ -32,35 +59,77 @@ function Header() {
         </Link>
       );
     }
-    if (storedUser.foto_perfil) {
-      return (
-        <>
-          <Link to="/perfil">
+
+    const toggleMenu = () => setMenuOpen(!menuOpen);
+
+    return (
+      <div className="relative">
+        <button onClick={toggleMenu} className="flex items-center gap-2">
+          {storedUser && storedUser.fotoPerfil ? (
             <img
-              src={baseUrl + storedUser.foto_perfil}
-              alt={storedUser.nome}
+              src={baseUrl + storedUser.fotoPerfil}
+              alt={storedUser.name}
               className="w-10 h-10 rounded-full"
             />
-          </Link>
-          <button className="text-center rounded-lg" onClick={logout}>
-            Logout
-          </button>
-        </>
-      );
-    } else {
-      return (
-        <>
-          <Link to="/perfil">
+          ) : (
             <div className="w-10 h-10 bg-slate-500 flex items-center justify-center rounded-full text-xl font-bold text-white">
-              {storedUser.nome.charAt(0)}
+              {storedUser.name.charAt(0)}
             </div>
-          </Link>
-          <button className="text-center rounded-lg" onClick={logout}>
-            Logout
-          </button>
-        </>
-      );
-    }
+          )}
+          <svg
+            className={`w-5 transform transition-transform ${
+              menuOpen ? "rotate-90" : ""
+            }`}
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth="1.5"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="m19.5 8.25-7.5 7.5-7.5-7.5"
+            />
+          </svg>
+        </button>
+
+        {menuOpen && (
+          <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 py-1">
+            <Link
+              to="/perfil"
+              className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              onClick={toggleMenu}
+            >
+              Editar Perfil
+            </Link>
+            <Link
+              to="/solicitacoes"
+              className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              onClick={toggleMenu}
+            >
+              Solicitações de Mentoria
+            </Link>
+            <Link
+              to="/mentorias"
+              className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              onClick={toggleMenu}
+            >
+              Minhas Mentorias
+            </Link>
+            <button
+              onClick={() => {
+                logout();
+                toggleMenu();
+              }}
+              className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+            >
+              Sair
+            </button>
+          </div>
+        )}
+      </div>
+    );
   }
 
   function getMentorButton() {
@@ -92,7 +161,9 @@ function Header() {
       <header className="px-8 md:px-0">
         <div className="container mx-auto flex flex-col md:flex-row py-6 md:py-0 gap-6 md:gap-0 justify-between items-center md:h-24">
           <div>
-            <Link to="/"><img src={logo} alt="logotipo Mentorr" /></Link>
+            <Link to="/">
+              <img src={logo} alt="logotipo Mentorr" />
+            </Link>
           </div>
           <div className="flex gap-4 md:gap-12 items-center">
             <div className="flex gap-2">
@@ -119,6 +190,7 @@ function Header() {
       </header>
 
       <HeaderMenu />
+      <ToastContainer />
     </>
   );
 }
