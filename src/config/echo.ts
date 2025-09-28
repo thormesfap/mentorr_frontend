@@ -23,7 +23,7 @@ const echo = new Echo({
   wsPort: 8080,
   wssPort: 8080,
   forceTLS: false,
-  enabledTransports: ["ws", "wss"],
+  enabledTransports: ["ws"],
 });
 
 export default echo;
