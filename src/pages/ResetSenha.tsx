@@ -54,7 +54,7 @@ function ResetSenha() {
         globalMessage(response.message || "Erro ao redifinir senha", "error", 5000);
         
       }
-    } catch (error) {
+    } catch  {
       globalMessage("Erro ao redefinir senha", "error", 5000);
     } finally {
       setLoading(false);

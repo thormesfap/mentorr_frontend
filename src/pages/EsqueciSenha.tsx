@@ -25,7 +25,7 @@ function EsqueciSenha() {
         navigate("/login");
       }
 
-    } catch (error) {
+    } catch {
       globalMessage("Erro ao solicitar recuperação de senha", "error", 5000);
     } finally {
       setLoading(false);

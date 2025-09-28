@@ -5,7 +5,7 @@ import { logout as performLogout } from "../../services/authService";
 import { useEffect, useState } from "react";
 import { useAppContext } from "../../contexts/AppContext";
 import { toast, ToastContainer } from "react-toastify";
-import echo from "../../config/echo.js";
+import echo from "../../config/echo";
 
 function Header() {
   const { user, setUser } = useAppContext();
@@ -29,8 +29,8 @@ function Header() {
           toast.info("Novo aluno solicitou mentoria!");
         });
     }
-    echo.channel(`aluno.${storedUser.id}`).listen("MentoriaAceita", () => {
-      toast.info("Um mentor aceitou sua solicitação de mentoria")
+    echo.channel(`aluno.${storedUser.id}`).listen("MentoriaRespondida", () => {
+      toast.info("Um mentor respondeu sua solicitação de mentoria")
     });
     return () => {
       if (storedUser?.mentor?.id) {
@@ -39,7 +39,7 @@ function Header() {
           .stopListening("MatriculaAluno");
         echo.leaveChannel(`mentor.${storedUser.mentor.id}`);
       }
-      echo.channel(`aluno.${storedUser.id}`).stopListening("MentoriaAceita");
+      echo.channel(`aluno.${storedUser.id}`).stopListening("MentoriaRespondida");
       echo.leaveChannel(`aluno.${storedUser.id}`);
     };
   }, [storedUser]);
