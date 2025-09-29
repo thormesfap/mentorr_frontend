@@ -37,11 +37,12 @@ export interface BackendMentoria extends Entity {
   mentor_id: number;
   user?: BackendUser;
   mentor?: BackendMentor;
+  sessoes?: BackendSessaoMentoria[];
 }
 
-export interface SessaoMentoria extends Entity {
+export interface BackendSessaoMentoria extends Entity {
   data_hora_inicio?: Date;
-  dat_hora_termino?: Date;
+  data_hora_termino?: Date;
   avaliacao?: number;
   mentoria: BackendMentoria;
 }

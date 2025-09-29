@@ -3,6 +3,7 @@ import { postRequest, getRequest } from "./apiService.ts";
 import { Mentoria } from 'interfaces/mentorr-interfaces.ts';
 import { mapMentor } from './mentorService.ts';
 import { mapUser } from './authService.ts';
+import { mapSessaoMentoria } from './sessaoMentoriaService.ts';
 
 function mapMentoria(data: BackendMentoria): Mentoria {
   return {
@@ -17,7 +18,8 @@ function mapMentoria(data: BackendMentoria): Mentoria {
     avaliacao: data.avaliacao,
       ativa: data.ativa,
       usuario: data.user ? mapUser(data.user): undefined,
-    mentor: data.mentor ? mapMentor(data.mentor): undefined
+    mentor: data.mentor ? mapMentor(data.mentor) : undefined,
+    sessoes: data.sessoes?.map(mapSessaoMentoria)
   };
 }
 
@@ -90,5 +92,5 @@ export {
   createMentoria,
   getMentoriasUsuario,
   getMentoriasMentor,
-  type Mentoria,
+  mapMentoria,
 };

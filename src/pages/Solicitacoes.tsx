@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useAppContext } from "../contexts/AppContext";
 import {
   SolicitacaoMentoria,
@@ -24,25 +24,26 @@ function SolicitacoesPage() {
   const { user } = useAppContext();
   const isMentor = user?.mentor !== undefined;
 
-  useEffect(() => {
-    if (user) {
-      loadData();
-    }
-  }, [user]);
-
-  const loadData = async () => {
+  
+  const loadData = useCallback(async () => {
     const resUsuario = await getSolicitacoesUsuario();
     if (resUsuario.success) {
       setSolicitacoesUsuario(resUsuario.data);
     }
-
+    
     if (isMentor) {
       const resMentor = await getSolicitacoesMentor();
       if (resMentor.success) {
         setSolicitacoesMentor(resMentor.data);
       }
     }
-  };
+  }, [isMentor]);
+  
+  useEffect(() => {
+    if (user) {
+      loadData();
+    }
+  }, [user, loadData]);
 
   const handleResponder = (solicitacao: SolicitacaoMentoria) => {
     setSelectedSolicitacao(solicitacao);

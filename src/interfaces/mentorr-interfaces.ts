@@ -66,13 +66,14 @@ export interface Mentoria extends Entity {
   mentorId?: number;
   usuario?: User;
   mentor?: Mentor;
+  sessoes?: SessaoMentoria[];
 }
 
 export interface SessaoMentoria extends Entity {
   dataHoraInicio?: Date;
   dataHoraTermino?: Date;
   avaliacao?: number;
-  mentoria: Mentoria;
+  mentoria?: Mentoria;
 }
 
 export interface SolicitacaoMentoria extends Entity{

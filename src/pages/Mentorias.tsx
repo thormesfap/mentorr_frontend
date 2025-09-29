@@ -1,11 +1,13 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useAppContext } from "../contexts/AppContext";
 import {
   getMentoriasUsuario,
   getMentoriasMentor,
-  Mentoria,
 } from "../services/mentoriaService";
 import { globalMessage } from "../services/appState";
+import { Mentoria } from "interfaces/mentorr-interfaces";
+import Star from "@components/Star";
+import SessaoMentoriaCard from "@components/SessaoMentoria";
 
 function MentoriasPage() {
   const [activeTab, setActiveTab] = useState<"usuario" | "mentor">("usuario");
@@ -14,13 +16,7 @@ function MentoriasPage() {
   const { user } = useAppContext();
   const isMentor = user?.mentor !== undefined;
 
-  useEffect(() => {
-    if (user) {
-      loadData();
-    }
-  }, [user]);
-
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     const resUsuario = await getMentoriasUsuario();
     if (resUsuario.success) {
       setMentoriasUsuario(resUsuario.data);
@@ -44,49 +40,74 @@ function MentoriasPage() {
         );
       }
     }
-  };
+  }, [isMentor]);
+
+  useEffect(() => {
+    if (user) {
+      loadData();
+    }
+  }, [user, loadData]);
 
   const renderMentoria = (mentoria: Mentoria) => (
-    <div key={mentoria.id} className="bg-white shadow-md rounded-lg p-6">
-      <h2 className="text-xl font-bold mb-4">
-        {mentoria.usuarioId != user?.id
-          ? `Aluno: ${mentoria.usuario?.name}`
-          : `Mentor: ${mentoria.mentor?.user?.name}`}
-      </h2>
-      <div className="text-gray-600 space-y-2">
-        <p>
-          <span className="font-semibold">Valor:</span>{" "}
-          {mentoria.valor.toLocaleString("pt-BR", {
-            style: "currency",
-            currency: "BRL",
-          })}
-        </p>
-        <p>
-          <span className="font-semibold">Quantidade de Sessões:</span>{" "}
-          {mentoria.quantidadeSessoes}
-        </p>
-        <p>
-          <span className="font-semibold">Status:</span>{" "}
-          {mentoria.ativa ? "Ativa" : "Encerrada"}
-        </p>
-        {mentoria.avaliacao && (
+    <div className="flex flex-col md:flex-row bg-white shadow-md rounded-lg p-6 gap-8">
+      <div key={mentoria.id}>
+        <h2 className="text-xl font-bold mb-4">
+          {mentoria.usuarioId != user?.id
+            ? `Aluno: ${mentoria.usuario?.name}`
+            : `Mentor: ${mentoria.mentor?.user?.name}`}
+        </h2>
+        <div className="text-gray-600 space-y-2">
           <p>
-            <span className="font-semibold">Avaliação:</span>{" "}
-            {mentoria.avaliacao}
+            <span className="font-semibold">Valor:</span>{" "}
+            {mentoria.valor.toLocaleString("pt-BR", {
+              style: "currency",
+              currency: "BRL",
+            })}
           </p>
-        )}
-        {mentoria.dataHoraInicio && (
           <p>
-            <span className="font-semibold">Início:</span>{" "}
-            {mentoria.dataHoraInicio.toLocaleString("pt-BR")}
+            <span className="font-semibold">Quantidade de Sessões:</span>{" "}
+            {mentoria.quantidadeSessoes}
           </p>
-        )}
-        {mentoria.dataHoraTermino && (
           <p>
-            <span className="font-semibold">Término:</span>{" "}
-            {mentoria.dataHoraTermino.toLocaleString("pt-BR")}
+            <span className="font-semibold">Status:</span>{" "}
+            {mentoria.ativa ? "Ativa" : "Encerrada"}
           </p>
-        )}
+          {mentoria.avaliacao && (
+            <p>
+              <span className="font-semibold">Avaliação:</span>{" "}
+              <Star
+                rating={mentoria.avaliacao}
+                is_small={false}
+                updateable={false}
+                mouseClick={() => {}}
+              />
+            </p>
+          )}
+          {mentoria.dataHoraInicio && (
+            <p>
+              <span className="font-semibold">Início:</span>{" "}
+              {mentoria.dataHoraInicio.toLocaleString("pt-BR")}
+            </p>
+          )}
+          {mentoria.dataHoraTermino && (
+            <p>
+              <span className="font-semibold">Término:</span>{" "}
+              {mentoria.dataHoraTermino.toLocaleString("pt-BR")}
+            </p>
+          )}
+        </div>
+      </div>
+      <div>
+        <h2 className="text-xl font-bold mb-4">Sessões</h2>
+        {mentoria.sessoes?.length ?? 0 > 0
+          ? mentoria.sessoes?.map((sessao) => (
+              <SessaoMentoriaCard
+                key={sessao.id}
+                sessao={sessao}
+                usuario={mentoria.usuarioId == user?.id}
+              />
+            ))
+          : "Nenhuma sessão registrada"}
       </div>
     </div>
   );
