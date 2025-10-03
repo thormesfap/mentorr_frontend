@@ -19,14 +19,14 @@ function SessaoMentoriaCard(props: { sessao: SessaoMentoria, usuario: boolean })
   }
 
   return (
-    <div className="flex flex-col md:flex-row gap-4">
+    <div className="flex flex-col md:flex-row gap-4 odd:bg-gray-100 p-2">
       <div>
         <div>Início:</div>
-        <div>{props.sessao.dataHoraInicio?.toLocaleDateString()}</div>
+        <div>{props.sessao.dataHoraInicio?.toLocaleString()}</div>
       </div>
       <div>
         <div>Término</div>
-        <div>{props.sessao.dataHoraTermino?.toLocaleDateString()}</div>
+        <div>{props.sessao.dataHoraTermino?.toLocaleString()}</div>
       </div>
       <div>
         <div>Avaliação</div>

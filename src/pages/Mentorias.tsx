@@ -8,11 +8,17 @@ import { globalMessage } from "../services/appState";
 import { Mentoria } from "interfaces/mentorr-interfaces";
 import Star from "@components/Star";
 import SessaoMentoriaCard from "@components/SessaoMentoria";
+import { createSessaoMentoria } from "../services/sessaoMentoriaService";
 
 function MentoriasPage() {
   const [activeTab, setActiveTab] = useState<"usuario" | "mentor">("usuario");
   const [mentoriasUsuario, setMentoriasUsuario] = useState<Mentoria[]>([]);
   const [mentoriasMentor, setMentoriasMentor] = useState<Mentoria[]>([]);
+  const [showAgendarDialog, setShowAgendarDialog] = useState(false);
+  const [selectedMentoria, setSelectedMentoria] = useState<Mentoria | null>(
+    null
+  );
+  const [dataHoraInicio, setDataHoraInicio] = useState("");
   const { user } = useAppContext();
   const isMentor = user?.mentor !== undefined;
 
@@ -48,8 +54,59 @@ function MentoriasPage() {
     }
   }, [user, loadData]);
 
+  const handleAbrirAgendamento = (mentoria: Mentoria) => {
+    setSelectedMentoria(mentoria);
+    setShowAgendarDialog(true);
+
+    // Define data/hora inicial como agora + 1 hora
+    const agora = new Date();
+    agora.setHours(agora.getHours() + 1);
+    agora.setMinutes(0);
+    const dataHoraFormatada = agora.toISOString().slice(0, 16);
+    setDataHoraInicio(dataHoraFormatada);
+  };
+
+  const handleFecharAgendamento = () => {
+    setShowAgendarDialog(false);
+    setSelectedMentoria(null);
+    setDataHoraInicio("");
+  };
+
+  const handleConfirmarAgendamento = async () => {
+    if (!selectedMentoria || !dataHoraInicio) {
+      globalMessage("Selecione uma data e hora válidas", "error", 3000);
+      return;
+    }
+
+    // Converte o datetime-local para Date
+    const dataInicio = new Date(dataHoraInicio);
+
+    // Valida se a data não é no passado
+    if (dataInicio < new Date()) {
+      globalMessage("A data deve ser no futuro", "error", 3000);
+      return;
+    }
+
+    const response = await createSessaoMentoria(
+      dataInicio,
+      selectedMentoria.id!
+    );
+
+    if (response.success) {
+      globalMessage("Sessão agendada com sucesso!", "success", 3000);
+      loadData(); // Recarrega as mentorias para mostrar a nova sessão
+      handleFecharAgendamento();
+    } else {
+      globalMessage(
+        response.message || "Erro ao agendar sessão",
+        "error",
+        5000
+      );
+    }
+  };
+
   const renderMentoria = (mentoria: Mentoria) => (
-    <div className="flex flex-col md:flex-row bg-white shadow-md rounded-lg p-6 gap-8">
+    <div className="flex flex-col md:flex-row bg-white shadow-md rounded-lg p-6 gap-8 even:bg-gray-200">
       <div key={mentoria.id}>
         <h2 className="text-xl font-bold mb-4">
           {mentoria.usuarioId != user?.id
@@ -89,14 +146,23 @@ function MentoriasPage() {
               {mentoria.dataHoraInicio.toLocaleString("pt-BR")}
             </p>
           )}
+
           {mentoria.dataHoraTermino && (
             <p>
               <span className="font-semibold">Término:</span>{" "}
               {mentoria.dataHoraTermino.toLocaleString("pt-BR")}
             </p>
           )}
+          {activeTab == "mentor" && mentoria.ativa ? (
+            <div className="mt-4">
+              <button onClick={() => handleAbrirAgendamento(mentoria)} className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">
+                Agendar Nova Sessão
+              </button>
+            </div>
+          ) : null}
         </div>
       </div>
+      
       <div>
         <h2 className="text-xl font-bold mb-4">Sessões</h2>
         {mentoria.sessoes?.length ?? 0 > 0
@@ -165,6 +231,49 @@ function MentoriasPage() {
           ))
         )}
       </div>
+      {showAgendarDialog && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+            <h2 className="text-xl font-bold mb-4">
+              Agendar Sessão de Mentoria
+            </h2>
+            <div className="flex flex-col gap-4">
+              <div>
+                <label className="block text-sm font-semibold mb-2">
+                  Data e Hora de Início
+                </label>
+                <input
+                  type="datetime-local"
+                  value={dataHoraInicio}
+                  onChange={(e) => setDataHoraInicio(e.target.value)}
+                  className="w-full border rounded p-2"
+                  min={new Date().toISOString().slice(0, 16)}
+                />
+              </div>
+
+              <div className="text-sm text-gray-600">
+                <p className="font-semibold">Mentoria com:</p>
+                <p>{selectedMentoria?.usuario?.name}</p>
+              </div>
+
+              <div className="flex gap-4 justify-end mt-4">
+                <button
+                  onClick={handleFecharAgendamento}
+                  className="px-4 py-2 border rounded hover:bg-gray-100"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={handleConfirmarAgendamento}
+                  className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                >
+                  Confirmar Agendamento
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { baseUrl } from "../../services/apiService";
 import logo from "../../assets/logo-mentorr.svg";
 import { logout as performLogout } from "../../services/authService";
@@ -13,6 +13,8 @@ function Header() {
     !!sessionStorage.getItem("jwtToken")
   );
   const storedUser = JSON.parse(sessionStorage.getItem("user") ?? "{}");
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (storedUser.id) {
@@ -47,6 +49,7 @@ function Header() {
   function logout() {
     performLogout();
     setIsLoggedIn(false);
+    navigate("/");
   }
 
   const [menuOpen, setMenuOpen] = useState(false);

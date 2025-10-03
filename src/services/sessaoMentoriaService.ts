@@ -18,7 +18,12 @@ function mapSessaoMentoria(data: BackendSessaoMentoria): SessaoMentoria {
 }
 
 function formatDate(data: Date): string {
-  return `${data.getDay()}/${data.getMonth()}/${data.getFullYear()} ${data.getMinutes()}:${data.getSeconds()}`;
+  const dia = String(data.getDate()).padStart(2, "0");
+  const mes = String(data.getMonth() + 1).padStart(2, "0"); // Mês começa em 0
+  const ano = data.getFullYear();
+  const horas = String(data.getHours()).padStart(2, "0");
+  const minutos = String(data.getMinutes()).padStart(2, "0");
+  return `${dia}/${mes}/${ano} ${horas}:${minutos}`;
 }
 
 async function createSessaoMentoria(inicio: Date, mentoria_id: number) {
