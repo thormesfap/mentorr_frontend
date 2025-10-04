@@ -143,10 +143,10 @@ function EditarPerfil() {
                 Dados de Mentor
               </button>
               <button
-                className={`px-6 py-3 font-medium transition ${
+                className={`py-2 px-4 ${
                   activeTab === "profissional"
-                    ? "text-blue-600 border-b-2 border-blue-600"
-                    : "text-slate-600 hover:text-slate-900"
+                    ? "border-b-2 border-blue-600 text-blue-600"
+                    : ""
                 }`}
                 onClick={() => setActiveTab("profissional")}
               >
@@ -185,7 +185,8 @@ function EditarPerfil() {
             </div>
           </form>
         ) : (
-          activeTab === 'mentor' && mentor && (
+          activeTab === "mentor" &&
+          mentor && (
             <form method="post" onSubmit={handleMentorSubmit}>
               <div className="flex flex-col gap-5">
                 <h3 className="font-semibold text-xl text-slate-900">
