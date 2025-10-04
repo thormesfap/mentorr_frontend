@@ -82,6 +82,60 @@ async function cadastraMentor(
     return { success: false, message: (error as Error).message };
   }
 }
+
+async function setMentorCargo(cargoId: number) {
+  try {
+    const response = await patchRequest(`mentor/cargo/${cargoId}`, {});
+    if (!response.message) {
+      return { success: true, data: mapMentor(response) };
+    } else {
+      return {
+        success: false,
+        message: response.message || "Erro ao definir cargo",
+      };
+    }
+  } catch (error) {
+    return { success: false, message: (error as Error).message };
+  }
+}
+
+async function setMentorEmpresa(empresaId: number) {
+  try {
+    const response = await patchRequest(`mentor/empresa/${empresaId}`, {});
+    if (!response.message) {
+      return { success: true, data: mapMentor(response) };
+    } else {
+      return {
+        success: false,
+        message: response.message || "Erro ao definir empresa",
+      };
+    }
+  } catch (error) {
+    return { success: false, message: (error as Error).message };
+  }
+}
+
+async function setMentorHabilidades(
+  mentorId: number,
+  habilidadesIds: number[]
+) {
+  try {
+    const response = await patchRequest(`mentor/${mentorId}/habilidades`, {
+      habilidades: habilidadesIds,
+    });
+    if (!response.message) {
+      return { success: true, data: mapMentor(response) };
+    } else {
+      return {
+        success: false,
+        message: response.message || "Erro ao definir habilidades",
+      };
+    }
+  } catch (error) {
+    return { success: false, message: (error as Error).message };
+  }
+}
+
 function mapMentor(data: BackendMentor): Mentor {
   const mentor: Mentor = {
     id: data.id,
@@ -149,4 +203,4 @@ async function updateMentor(
   }
 }
 
-export { getMentores, cadastraMentor, searchMentor, getMentor, updateMentor, mapMentor };
+export { getMentores, cadastraMentor, searchMentor, getMentor, updateMentor, mapMentor, setMentorCargo, setMentorEmpresa, setMentorHabilidades };

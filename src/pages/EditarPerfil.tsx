@@ -4,14 +4,16 @@ import { globalMessage } from "../services/appState";
 import { useAppContext } from "../contexts/AppContext";
 import { updateMentor } from "../services/mentorService";
 import { profile } from "../services/authService";
-import { Mentor} from "../interfaces/mentorr-interfaces";
+import { Mentor } from "../interfaces/mentorr-interfaces";
+import DadosProfissionaisMentor from '@components/layouts/DadosProfissionaisMentor';
+
 
 function EditarPerfil() {
   const navigate = useNavigate();
   const { user, setUser } = useAppContext();
   const [mentor, setMentor] = useState<Mentor | null>(null);
   const [loading, setLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState<"user" | "mentor">("user");
+  const [activeTab, setActiveTab] = useState<"user" | "mentor" | "profissional">("user");
 
   useEffect(() => {
     const storedUser = JSON.parse(sessionStorage.getItem("user") || "null");
@@ -56,6 +58,10 @@ function EditarPerfil() {
     } finally {
       setLoading(false);
     }
+  }
+
+  async function handleUpdateProfissional() {
+    globalMessage("Dados profissionais salvos", 'success', 3000);
   }
 
   async function handleMentorSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -125,16 +131,28 @@ function EditarPerfil() {
             Dados Pessoais
           </button>
           {user?.mentor && (
-            <button
-              className={`py-2 px-4 ${
-                activeTab === "mentor"
-                  ? "border-b-2 border-blue-600 text-blue-600"
-                  : ""
-              }`}
-              onClick={() => setActiveTab("mentor")}
-            >
-              Dados de Mentor
-            </button>
+            <>
+              <button
+                className={`py-2 px-4 ${
+                  activeTab === "mentor"
+                    ? "border-b-2 border-blue-600 text-blue-600"
+                    : ""
+                }`}
+                onClick={() => setActiveTab("mentor")}
+              >
+                Dados de Mentor
+              </button>
+              <button
+                className={`px-6 py-3 font-medium transition ${
+                  activeTab === "profissional"
+                    ? "text-blue-600 border-b-2 border-blue-600"
+                    : "text-slate-600 hover:text-slate-900"
+                }`}
+                onClick={() => setActiveTab("profissional")}
+              >
+                Dados Profissionais
+              </button>
+            </>
           )}
         </div>
 
@@ -167,7 +185,7 @@ function EditarPerfil() {
             </div>
           </form>
         ) : (
-          mentor && (
+          activeTab === 'mentor' && mentor && (
             <form method="post" onSubmit={handleMentorSubmit}>
               <div className="flex flex-col gap-5">
                 <h3 className="font-semibold text-xl text-slate-900">
@@ -184,8 +202,14 @@ function EditarPerfil() {
                   name="preco"
                   step="0.01"
                   placeholder="Insira o preço"
-                    value={mentor.preco || ""}
-                    onChange={(e) => setMentor((prev) => prev ? {...prev, preco:parseFloat(e.target.value)} : null)}
+                  value={mentor.preco || ""}
+                  onChange={(e) =>
+                    setMentor((prev) =>
+                      prev
+                        ? { ...prev, preco: parseFloat(e.target.value) }
+                        : null
+                    )
+                  }
                   required
                   disabled={loading}
                 />
@@ -253,6 +277,12 @@ function EditarPerfil() {
               </div>
             </form>
           )
+        )}
+        {activeTab === "profissional" && mentor && (
+          <DadosProfissionaisMentor
+            mentor={mentor}
+            onUpdate={handleUpdateProfissional}
+          />
         )}
       </div>
     </section>
